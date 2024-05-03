@@ -8,10 +8,21 @@ export const timeout = function (s) {
   });
 };
 
-export const getJSON = async function (url) {
+
+
+
+export const ajax = async function (url, uploadData = undefined, method) {
   try {
-    const fetchPro = fetch(url);
-    const res = await Promise.race([fetchPro, timeout(TIMEOUT_SEC)]);
+    const fetchRecipe = fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(uploadData),
+    });
+
+    const res = await Promise.race([fetchRecipe, timeout(TIMEOUT_SEC)]);
+
     const data = await res.json();
 
     if (!res.ok) throw new Error(`${data.message} (${res.status})`);
@@ -21,3 +32,28 @@ export const getJSON = async function (url) {
     throw err;
   }
 };
+
+// export const ajax = async function (url, uploadData = undefined, method = 'GET') {
+//   try {
+//     const response = await Promise.race([
+//       fetch(url, {
+//         method: method,
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(uploadData),
+//       }),
+//       timeout(TIMEOUT_SEC),
+//     ]);
+
+//     if (!response.ok) {
+//       const data = await response.json();
+//       throw new Error(`${data.message} (${response.status})`);
+//     }
+
+//     return await response.json();
+//   } catch (err) {
+//     throw err;
+//   }
+// };
+
